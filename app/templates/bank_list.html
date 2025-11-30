@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>All Banks</h1>
+
+{% if banks %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bank in banks %}
+            <tr>
+                <td>{{ bank.id }}</td>
+                <td><a href="{{ url_for('bank.get_bank_detail', bank_id=bank.id) }}">{{ bank.name }}</a></td>
+                <td>{{ bank.location }}</td>
+                <td>
+                    <a >Edit</a>
+                    <a >Delete</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No banks found. <a >Create one</a>.</p>
+{% endif %}
+
+{% endblock %}

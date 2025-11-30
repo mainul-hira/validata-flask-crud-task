@@ -1,0 +1,55 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+nav a {
+    margin-right: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 10px;
+}
+
+table, th, td {
+    border: 1px solid #bbb;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+}
+
+.flash-messages {
+    list-style: none;
+    padding: 0;
+}
+
+.flash {
+    padding: 6px;
+    margin-bottom: 4px;
+}
+
+.flash.success {
+    background-color: #d4edda;
+}
+
+.flash.error {
+    background-color: #f8d7da;
+}
+
+input{
+    height: 2rem;
+}
+
+.create-button{
+    padding: 8px 18px;
+    border-radius: 4px;
+    background: #b4dfff;
+    border: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+}

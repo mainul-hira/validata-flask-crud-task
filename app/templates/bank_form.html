@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+    {% if mode == "create" %}
+        <h1>Create Bank</h1>
+    {% else %}
+        <h1>Edit Bank</h1>
+{% endif %}
+
+<form method="post">
+    <label for="name">Name</label>
+    <input type="text" name="name" id="name"
+           value="{{ bank.name if bank else '' }}" >
+    &nbsp;&nbsp;
+    <label for="location">Location</label>
+    <input type="text" name="location" id="location"
+           value="{{ bank.location if bank else '' }}" >
+    &nbsp;&nbsp;
+    <button class="create-button" type="submit">
+        {% if mode == "create" %}Create{% else %}Update{% endif %}
+    </button>
+</form>
+
+<p><a href="{{ url_for('bank.get_bank_list') }}">Back to list</a></p>
+{% endblock %}

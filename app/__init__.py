@@ -28,7 +28,9 @@ def create_app(config_class):
 
     # Register blueprints (HTML views and REST API)
     from .api import api_bp
+    from .routes import bank_bp
 
+    app.register_blueprint(bank_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
-
+    
     return app
