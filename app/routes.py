@@ -72,12 +72,12 @@ def create_bank():
             flash("Name and location are required.", "error")
             return render_template("bank_form.html", mode="create")
 
-        # Check if a bank with the same name and location already exists
+        # Check if another bank with the same name and location already exists
         if Bank.query.filter(
             func.lower(Bank.name) == func.lower(name),
             func.lower(Bank.location) == func.lower(location),
         ).first():
-            flash("Bank with this name and location already exists.", "error")
+            flash("Another bank with this name and location already exists.", "error")
             return render_template("bank_form.html", mode="create")
 
         new_bank: Bank = Bank(name=name, location=location)
@@ -108,7 +108,7 @@ def update_bank(bank_id):
             flash("Name and location are required.", "error")
             return render_template("bank_form.html", mode="edit", bank=bank)
 
-        # Check if another bank with the same name and location already exists
+        # Check if another bank with the same name and location already exists except the current bank
         if Bank.query.filter(
             Bank.id != bank_id,
             func.lower(Bank.name) == func.lower(name),

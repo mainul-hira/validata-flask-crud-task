@@ -7,6 +7,7 @@ These endpoints return JSON.
 from flask import Blueprint, jsonify, request, current_app
 from http import HTTPStatus
 from werkzeug.exceptions import HTTPException
+from sqlalchemy import func
 
 from . import db
 from .models import Bank
@@ -16,6 +17,7 @@ api_bp = Blueprint("api", __name__)
 """
 Error Handlers (JSON only for API blueprint) are defined below.
 """
+
 
 @api_bp.errorhandler(HTTPException)
 def handle_http_exception(e: HTTPException) -> tuple[dict, int]:
@@ -29,7 +31,6 @@ def handle_http_exception(e: HTTPException) -> tuple[dict, int]:
     response = {
         "error": e.name,
         "message": e.description,
-        "status_code": e.code,
     }
     return jsonify(response), e.code
 
@@ -48,7 +49,6 @@ def handle_unexpected_exception(e: Exception) -> tuple[dict, int]:
     response = {
         "error": "Internal Server Error",
         "message": "An unexpected error occurred. Please try again later.",
-        "status_code": HTTPStatus.INTERNAL_SERVER_ERROR,
     }
     return jsonify(response), HTTPStatus.INTERNAL_SERVER_ERROR
 
@@ -56,6 +56,7 @@ def handle_unexpected_exception(e: Exception) -> tuple[dict, int]:
 """
 API endpoints below.
 """
+
 
 @api_bp.route("/banks", methods=["GET"])
 def get_bank_list() -> tuple[dict, int]:
@@ -92,6 +93,18 @@ def create_bank():
             ),
             HTTPStatus.BAD_REQUEST,
         )
+
+    # Check if another bank with the same name and location already exists
+    if Bank.query.filter(
+        func.lower(Bank.name) == func.lower(name),
+        func.lower(Bank.location) == func.lower(location),
+    ).first():
+        return jsonify(
+            {
+                "error": "Existing bank",
+                "message": "Another bank with this name and location already exists",
+            }
+        ), HTTPStatus.BAD_REQUEST
 
     bank: Bank = Bank(name=name, location=location)
     db.session.add(bank)
@@ -134,6 +147,19 @@ def update_bank(bank_id):
             ),
             HTTPStatus.BAD_REQUEST,
         )
+
+    # Check if another bank with the same name and location already exists except the current bank
+    if Bank.query.filter(
+        Bank.id != bank_id,
+        func.lower(Bank.name) == func.lower(name),
+        func.lower(Bank.location) == func.lower(location),
+    ).first():
+        return jsonify(
+            {
+                "error": "Existing bank",
+                "message": "Another bank with this name and location already exists",
+            }
+        ), HTTPStatus.BAD_REQUEST
 
     if name:
         bank.name = name
