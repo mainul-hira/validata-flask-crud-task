@@ -35,13 +35,27 @@ def home():
 @bank_bp.route("/banks")
 def get_bank_list():
     """
-    List all banks.
+    List all banks with pagination.
 
     This function queries all Bank records and passes them to the template
     which displays them in a table.
     """
-    banks = Bank.query.all()
-    return render_template("bank_list.html", banks=banks)
+
+    page = request.args.get("page", 1, type=int)
+    if page < 1:
+        page = 1
+
+    per_page = 5
+
+    pagination = Bank.query.order_by(Bank.id).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=True,
+    )
+
+    return render_template(
+        "bank_list.html", banks=pagination.items, pagination=pagination
+    )
 
 
 @bank_bp.route("/banks/<int:bank_id>")

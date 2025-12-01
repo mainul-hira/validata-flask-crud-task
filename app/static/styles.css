@@ -1,4 +1,3 @@
-
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
@@ -14,11 +13,14 @@ table {
     margin-top: 10px;
 }
 
-table, th, td {
+table,
+th,
+td {
     border: 1px solid #bbb;
 }
 
-th, td {
+th,
+td {
     padding: 8px;
     text-align: left;
 }
@@ -41,11 +43,13 @@ th, td {
     background-color: #f8d7da;
 }
 
-input{
+input {
     height: 2rem;
 }
 
-.create-button, .delete-button, .cancel-button{
+.create-button,
+.delete-button,
+.cancel-button {
     padding: 8px 18px;
     border-radius: 4px;
     border: none;
@@ -53,15 +57,30 @@ input{
     font-size: 0.95rem;
 }
 
-.create-button{
+.create-button {
     background: #b4dfff;
 }
 
-.delete-button{
+.delete-button {
     background: #f8d7da;
 }
 
-.cancel-button{
+.cancel-button {
     background: #b4dfff;
     text-decoration: none;
+}
+
+.pagination {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.pagination a,
+.pagination span {
+    margin: 0 4px;
+    text-decoration: none;
+}
+
+.pagination .current {
+    font-weight: bold;
 }
