@@ -10,6 +10,7 @@ import os
 
 class BaseConfig:
     """Base configuration shared by all environments."""
+
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
     # Disable SQLAlchemy event system overhead if not needed
@@ -18,9 +19,21 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     """Configuration for local development using SQL Server in Docker."""
+
     DEBUG = True
     # SQL Server connection string using pyodbc + SQLAlchemy
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DB_URL",
         "",
     )
+
+
+class TestingConfig(BaseConfig):
+    """
+    Configuration for tests.
+
+    Use an in-memory SQLite database for tests.
+    """
+
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"

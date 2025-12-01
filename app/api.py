@@ -66,12 +66,12 @@ def get_bank_list() -> tuple[dict, int]:
     Return a JSON list of all banks with pagination.
     """
     page: int = request.args.get("page", 1, type=int)
-    per_page: int = request.args.get("per_page", 10, type=int)
+    per_page: int = request.args.get("per_page", 5, type=int)
 
     if page < 1:
         page = 1
     if per_page < 1:
-        per_page = 10
+        per_page = 5
     # To prevent excessive data transfer and potential performance issues,
     # we enforce a maximum page size of 100 records per request.
     if per_page > 100:
