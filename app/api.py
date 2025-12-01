@@ -63,11 +63,41 @@ def get_bank_list() -> tuple[dict, int]:
     """
     GET /api/banks
 
-    Return a JSON list of all banks.
+    Return a JSON list of all banks with pagination.
     """
-    banks: list[Bank] = Bank.query.all()
-    bank_list: list[dict] = [bank.to_dict() for bank in banks]
-    return jsonify(bank_list), HTTPStatus.OK
+    page: int = request.args.get("page", 1, type=int)
+    per_page: int = request.args.get("per_page", 10, type=int)
+
+    if page < 1:
+        page = 1
+    if per_page < 1:
+        per_page = 10
+    # To prevent excessive data transfer and potential performance issues,
+    # we enforce a maximum page size of 100 records per request.
+    if per_page > 100:
+        per_page = 100
+
+    pagination = Bank.query.order_by(Bank.id).paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False,
+    )
+
+    return jsonify(
+        {
+            "data": [bank.to_dict() for bank in pagination.items],
+            "pagination": {
+                "page": pagination.page,
+                "per_page": pagination.per_page,
+                "total": pagination.total,
+                "total_pages": pagination.pages,
+                "has_next": pagination.has_next,
+                "has_prev": pagination.has_prev,
+                "next_page": pagination.next_num,
+                "prev_page": pagination.prev_num,
+            },
+        }
+    ), HTTPStatus.OK
 
 
 @api_bp.route("/banks", methods=["POST"])
