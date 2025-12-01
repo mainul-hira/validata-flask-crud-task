@@ -3,6 +3,10 @@ Tests for HTML routes (frontend CRUD) using Flask's test client.
 This covers:
 - listing banks
 - pagination behavior on /banks
+- creating a bank
+- editing a bank
+- deleting a bank
+- bank detail page
 """
 
 from app import db
@@ -16,6 +20,7 @@ def test_get_bank_list_page_empty(client):
     response = client.get("/banks")
     assert response.status_code == 200
     assert b"No banks found" in response.data
+    assert b"Create one" in response.data
 
 
 def test_bank_list_pagination_first_page_html(client, app):
@@ -77,3 +82,92 @@ def test_bank_list_pagination_second_page_html(client, app):
 
     # Check pagination current page 2
     assert '<span class="current">2</span>' in html_text
+
+
+def test_create_bank_via_form(client, app):
+    """
+    Test creating a bank via the HTML form.
+    """
+    response = client.post(
+        "/banks/create",
+        data={"name": "Test Bank", "location": "Dhaka"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert b"Bank created successfully" in response.data
+    assert b"Test Bank" in response.data
+
+    # Ensure it's saved in the DB also
+    with app.app_context():
+        bank = Bank.query.filter_by(name="Test Bank").first()
+        assert bank is not None
+        assert bank.location == "Dhaka"
+
+
+def test_update_bank_via_form(client, app):
+    """
+    Test updating a bank via the HTML form.
+    """
+    with app.app_context():
+        bank = Bank(name="Dhaka Bank", location="City")
+        db.session.add(bank)
+        db.session.commit()
+        bank_id = bank.id
+
+    response = client.post(
+        f"/banks/{bank_id}/edit",
+        data={"name": "Eastern Bank Ltd.", "location": "Chittagong"},
+        follow_redirects=True,
+    )
+    assert response.status_code == 200
+    assert b"Bank updated successfully" in response.data
+    assert b"Eastern Bank Ltd." in response.data
+
+    with app.app_context():
+        updated = db.session.get(Bank, bank_id)
+        assert updated.name == "Eastern Bank Ltd."
+        assert updated.location == "Chittagong"
+
+
+def test_delete_bank_via_form(client, app):
+    """
+    Test deleting a bank via the HTML delete route.
+    """
+    with app.app_context():
+        bank = Bank(name="Dhaka Bank", location="Bangladesh")
+        db.session.add(bank)
+        db.session.commit()
+        bank_id = bank.id
+
+    # First show confirmation page
+    response = client.get(f"/banks/{bank_id}/delete")
+    assert response.status_code == 200
+    assert (
+        b"Are you sure you want to delete bank <strong>Dhaka Bank</strong>"
+        in response.data
+    )
+
+    # Then POST to actually delete
+    response = client.post(f"/banks/{bank_id}/delete", follow_redirects=True)
+    assert response.status_code == 200
+    assert b"Bank deleted successfully" in response.data
+
+    with app.app_context():
+        deleted = db.session.get(Bank, bank_id)
+        assert deleted is None
+
+
+def test_bank_detail_page(client, app):
+    """
+    Test the detail page shows correct bank info.
+    """
+    with app.app_context():
+        bank = Bank(name="Dhaka Bank", location="Dhaka")
+        db.session.add(bank)
+        db.session.commit()
+        bank_id = bank.id
+
+    response = client.get(f"/banks/{bank_id}")
+    assert response.status_code == 200
+    assert b"Dhaka Bank" in response.data
+    assert b"Dhaka" in response.data
