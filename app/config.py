@@ -26,6 +26,7 @@ class DevelopmentConfig(BaseConfig):
         "DB_URL",
         "",
     )
+    print(os.getenv("DB_URL"))
 
 
 class TestingConfig(BaseConfig):

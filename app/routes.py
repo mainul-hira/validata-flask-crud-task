@@ -65,7 +65,7 @@ def get_bank_detail(bank_id):
 
     :param bank_id: ID of the bank to display
     """
-    bank = Bank.query.get_or_404(bank_id)
+    bank = db.get_or_404(Bank, bank_id)
     return render_template("bank_detail.html", bank=bank)
 
 
@@ -112,7 +112,7 @@ def update_bank(bank_id):
     - GET: render the form pre-filled with existing data.
     - POST: apply updates and save to the database.
     """
-    bank: Bank = Bank.query.get_or_404(bank_id)
+    bank: Bank = db.get_or_404(Bank, bank_id)
 
     if request.method == "POST":
         name: str | None = request.form.get("name")
@@ -153,7 +153,7 @@ def delete_bank(bank_id: int) -> str:
     Using POST for deletion is safer than using GET, because GET requests
     should not have side effects.
     """
-    bank = Bank.query.get_or_404(bank_id)
+    bank = db.get_or_404(Bank, bank_id)
 
     if request.method == "POST":
         db.session.delete(bank)

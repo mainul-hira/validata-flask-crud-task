@@ -146,7 +146,9 @@ def get_bank_details(bank_id: int) -> tuple[dict, int]:
 
     Return JSON for a single bank or 404 if not found.
     """
-    bank: Bank = Bank.query.get_or_404(bank_id, f"Bank with id {bank_id} not found")
+    bank: Bank = db.get_or_404(
+        Bank, bank_id, description=f"Bank with id {bank_id} not found"
+    )
     return jsonify(bank.to_dict()), HTTPStatus.OK
 
 
@@ -157,7 +159,9 @@ def update_bank(bank_id):
 
     Update an existing bank. Expects JSON with 'name' and/or 'location'.
     """
-    bank: Bank = Bank.query.get_or_404(bank_id, f"Bank with id {bank_id} not found")
+    bank: Bank = db.get_or_404(
+        Bank, bank_id, description=f"Bank with id {bank_id} not found"
+    )
     data: dict = request.get_json() or {}
 
     name: str | None = data.get("name")
@@ -204,7 +208,9 @@ def delete_bank(bank_id: int) -> tuple[str, int]:
 
     Delete an existing bank.
     """
-    bank: Bank = Bank.query.get_or_404(bank_id, f"Bank with id {bank_id} not found")
+    bank: Bank = db.get_or_404(
+        Bank, bank_id, description=f"Bank with id {bank_id} not found"
+    )
     db.session.delete(bank)
     db.session.commit()
     # 204 No Content indicates success with no response body
