@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}Bank Details{% endblock %}
+
 {% block content %}
 <h1>Bank Details</h1>
 
@@ -8,7 +10,7 @@
 <p><strong>Location:</strong> {{ bank.location }}</p>
 
 <p>
-    <a >Edit</a> |
+    <a href="{{ url_for('bank.update_bank', bank_id=bank.id) }}">Edit</a> |
     <a href="{{ url_for('bank.get_bank_list') }}">Back to list</a>
 </p>
 {% endblock %}

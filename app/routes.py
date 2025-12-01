@@ -13,11 +13,12 @@ from flask import (
     url_for,
     flash,
 )
+from sqlalchemy import func
 
 from . import db
 from .models import Bank
 
-# Blueprint for bank-related pages 
+# Blueprint for bank-related pages
 bank_bp = Blueprint("bank", __name__)
 
 
@@ -71,7 +72,15 @@ def create_bank():
             flash("Name and location are required.", "error")
             return render_template("bank_form.html", mode="create")
 
-        new_bank = Bank(name=name, location=location)
+        # Check if a bank with the same name and location already exists
+        if Bank.query.filter(
+            func.lower(Bank.name) == func.lower(name),
+            func.lower(Bank.location) == func.lower(location),
+        ).first():
+            flash("Bank with this name and location already exists.", "error")
+            return render_template("bank_form.html", mode="create")
+
+        new_bank: Bank = Bank(name=name, location=location)
         db.session.add(new_bank)
         db.session.commit()
         flash("Bank created successfully!", "success")
@@ -79,3 +88,64 @@ def create_bank():
 
     # GET request: render the form
     return render_template("bank_form.html", mode="create")
+
+
+@bank_bp.route("/banks/<int:bank_id>/edit", methods=["GET", "POST"])
+def update_bank(bank_id):
+    """
+    Update an existing bank.
+
+    - GET: render the form pre-filled with existing data.
+    - POST: apply updates and save to the database.
+    """
+    bank: Bank = Bank.query.get_or_404(bank_id)
+
+    if request.method == "POST":
+        name: str | None = request.form.get("name")
+        location: str | None = request.form.get("location")
+
+        if not name or not location:
+            flash("Name and location are required.", "error")
+            return render_template("bank_form.html", mode="edit", bank=bank)
+
+        # Check if another bank with the same name and location already exists
+        if Bank.query.filter(
+            Bank.id != bank_id,
+            func.lower(Bank.name) == func.lower(name),
+            func.lower(Bank.location) == func.lower(location),
+        ).first():
+            flash("Another bank with this name and location already exists.", "error")
+            return render_template("bank_form.html", mode="edit", bank=bank)
+
+        bank.name = name
+        bank.location = location
+        db.session.commit()
+
+        flash("Bank updated successfully!", "success")
+        return redirect(url_for("bank.get_bank_detail", bank_id=bank.id))
+
+    # GET request: render form with existing values
+    return render_template("bank_form.html", mode="edit", bank=bank)
+
+
+@bank_bp.route("/banks/<int:bank_id>/delete", methods=["GET", "POST"])
+def delete_bank(bank_id: int) -> str:
+    """
+    Delete a bank.
+
+    - GET: show a confirmation page.
+    - POST: delete the bank and redirect to the list.
+
+    Using POST for deletion is safer than using GET, because GET requests
+    should not have side effects.
+    """
+    bank = Bank.query.get_or_404(bank_id)
+
+    if request.method == "POST":
+        db.session.delete(bank)
+        db.session.commit()
+        flash("Bank deleted successfully.", "success")
+        return redirect(url_for("bank.get_bank_list"))
+
+    # GET: show confirmation page
+    return render_template("bank_confirm_delete.html", bank=bank)

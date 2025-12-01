@@ -1,27 +1,31 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <title>{% block title %}Bank List{% endblock %} | Bank Manager</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="utf-8">
+  <title>{% block title %}Bank List{% endblock %} | Bank Manager</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
+
 <body>
-<nav>
+  <nav>
     <a href="{{ url_for('bank.get_bank_list') }}">Banks</a>
     <a href="{{ url_for('bank.create_bank') }}">Add Bank</a>
-</nav>
+  </nav>
 
-{% with messages = get_flashed_messages(with_categories=true) %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
-    <ul class="flash-messages">
-      {% for category, message in messages %}
-        <li class="flash {{ category }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
+  <ul class="flash-messages">
+    {% for category, message in messages %}
+    <li class="flash {{ category }}">{{ message }}</li>
+    {% endfor %}
+  </ul>
   {% endif %}
-{% endwith %}
+  {% endwith %}
 
-<main>
+  <main>
     {% block content %}{% endblock %}
-</main>
+  </main>
 </body>
+
 </html>

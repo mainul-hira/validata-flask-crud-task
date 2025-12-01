@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Delete Bank</h1>
+
+<p>Are you sure you want to delete bank <strong>{{ bank.name }}</strong> ({{ bank.location }})?</p>
+
+<form method="post">
+    <button type="submit" class="delete-button">Yes, delete</button>
+    <a href="{{ url_for('bank.get_bank_list') }}" class="cancel-button">Cancel</a>
+</form>
+{% endblock %}

@@ -45,11 +45,23 @@ input{
     height: 2rem;
 }
 
-.create-button{
+.create-button, .delete-button, .cancel-button{
     padding: 8px 18px;
     border-radius: 4px;
-    background: #b4dfff;
     border: none;
     cursor: pointer;
     font-size: 0.95rem;
+}
+
+.create-button{
+    background: #b4dfff;
+}
+
+.delete-button{
+    background: #f8d7da;
+}
+
+.cancel-button{
+    background: #b4dfff;
+    text-decoration: none;
 }
