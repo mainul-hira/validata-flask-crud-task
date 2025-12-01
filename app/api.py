@@ -108,21 +108,17 @@ def create_bank():
     Create a new bank. Expects JSON body with 'name' and 'location'.
     """
     data: dict = request.get_json() or {}
+    error_response = {
+        "error": "Invalid request body",
+        "message": "Both name and location are required",
+    }
     if not data:
-        return jsonify({"error": "No data provided"}), HTTPStatus.BAD_REQUEST
+        return jsonify(error_response), HTTPStatus.BAD_REQUEST
     name: str = data.get("name")
     location: str = data.get("location")
 
     if not name or not location:
-        return (
-            jsonify(
-                {
-                    "error": "Invalid request body",
-                    "message": "Both name and location must be provided",
-                }
-            ),
-            HTTPStatus.BAD_REQUEST,
-        )
+        return jsonify(error_response), HTTPStatus.BAD_REQUEST
 
     # Check if another bank with the same name and location already exists
     if Bank.query.filter(
@@ -172,7 +168,7 @@ def update_bank(bank_id):
             jsonify(
                 {
                     "error": "Invalid request body",
-                    "message": "Either name or location must be provided",
+                    "message": "Either name or location is required",
                 }
             ),
             HTTPStatus.BAD_REQUEST,
