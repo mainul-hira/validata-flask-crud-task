@@ -36,7 +36,6 @@ class DevelopmentConfig(BaseConfig):
         f"mssql+pyodbc://{_db_user}:{_encoded_pass}@{_db_server}:1433/{_db_name}"
         "?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
     )
-    print(SQLALCHEMY_DATABASE_URI)
 
 
 class TestingConfig(BaseConfig):
