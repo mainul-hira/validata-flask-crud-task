@@ -6,7 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Configuration
-SERVER = "(local)"
+# Use 'db' for Docker environment, '(local)' or 'localhost' for local development
+SERVER = os.getenv("DB_SERVER", "localhost")
 DRIVER = "{ODBC Driver 18 for SQL Server}"
 DB_NAME = os.getenv("DB_NAME")
 

@@ -13,4 +13,5 @@ app = create_app(DevelopmentConfig)
 
 if __name__ == "__main__":
     # Run the development server
-    app.run(debug=True)
+    # Use host='0.0.0.0' to make the server accessible from outside the container
+    app.run(host="0.0.0.0", port=5001, debug=True)

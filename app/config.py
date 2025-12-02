@@ -6,6 +6,7 @@ so that the application factory can easily switch configurations.
 """
 
 import os
+import urllib.parse
 
 
 class BaseConfig:
@@ -22,11 +23,20 @@ class DevelopmentConfig(BaseConfig):
 
     DEBUG = True
     # SQL Server connection string using pyodbc + SQLAlchemy
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DB_URL",
-        "",
+    # We construct the URI here to ensure the password is correctly URL-encoded
+    _db_user = os.getenv("DB_USER", "sa")
+    _db_pass = os.getenv("DB_PASS", "YourStrongPassw0rd")
+    _db_server = os.getenv("DB_SERVER", "db")
+    _db_name = os.getenv("DB_NAME", "BankDB")
+
+    # URL-encode the password to handle special characters
+    _encoded_pass = urllib.parse.quote_plus(_db_pass)
+
+    SQLALCHEMY_DATABASE_URI = (
+        f"mssql+pyodbc://{_db_user}:{_encoded_pass}@{_db_server}:1433/{_db_name}"
+        "?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
     )
-    print(os.getenv("DB_URL"))
+    print(SQLALCHEMY_DATABASE_URI)
 
 
 class TestingConfig(BaseConfig):
